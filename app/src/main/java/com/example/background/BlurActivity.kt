@@ -51,6 +51,9 @@ class BlurActivity : AppCompatActivity() {
         viewModel.imageUri?.let { imageUri ->
             Glide.with(this).load(imageUri).into(imageView)
         }
+        goButton.setOnClickListener{
+            viewModel.appplyBlur(4)
+        }
 
     }
 
