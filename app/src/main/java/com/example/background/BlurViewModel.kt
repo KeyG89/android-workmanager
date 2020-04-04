@@ -35,6 +35,7 @@ class BlurViewModel(application: Application) : AndroidViewModel(application) {
 
     // Add an init block to the BlurViewModel class
     internal val outputWorkInfos: LiveData<List<WorkInfo>>
+
     init {
         // This transformation makes sure that whenever the current work Id changes
         // the WorkInfo, the UI is listening to changes
@@ -60,6 +61,10 @@ class BlurViewModel(application: Application) : AndroidViewModel(application) {
         } else {
             null
         }
+    }
+
+    internal fun cancelWork() {
+        workManager.cancelUniqueWork(IMAGE_MANIPULATION_WORK_NAME)
     }
 
     /**
