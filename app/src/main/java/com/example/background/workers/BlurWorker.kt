@@ -18,6 +18,9 @@ class BlurWorker(ctx: Context, params: WorkerParameters) : Worker(ctx, params) {
 
         makeStatusNotification("Blurring image", appContext)
 
+        // slow down the worker for a testing purpose
+        sleep()
+
         return try {
             if (TextUtils.isEmpty(resourceUri)) {
                 Timber.e("Invalid input uri")

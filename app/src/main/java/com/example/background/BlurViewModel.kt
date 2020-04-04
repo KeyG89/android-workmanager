@@ -20,9 +20,12 @@ import android.app.Application
 import android.net.Uri
 import androidx.lifecycle.AndroidViewModel
 import androidx.work.Data
+import androidx.work.OneTimeWorkRequest
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import com.example.background.workers.BlurWorker
+import com.example.background.workers.CleanupWorker
+import com.example.background.workers.SaveImageToFIleWorkerclass
 
 
 class BlurViewModel(application: Application) : AndroidViewModel(application) {
@@ -58,11 +61,32 @@ class BlurViewModel(application: Application) : AndroidViewModel(application) {
     /**
      * Setters
      */
-    internal fun appplyBlur(blurLevel: Int) {
-//      workManager.enqueue(OneTimeWorkRequest.from(BlurWorker::class.java))
-        val blurRequest = OneTimeWorkRequestBuilder<BlurWorker>()
-                .setInputData(createInputDataForUri()).build()
-        workManager.enqueue(blurRequest)
+    internal fun applyBlur(blurLevel: Int) {
+        // Ad WorkRequest to Cleanup temporary images
+        var continuation = workManager
+                .beginWith(OneTimeWorkRequest
+                        .from(CleanupWorker::class.java))
+
+        // Add WorkerRequest to blur the image the number of times requested
+        val blurBuilder = OneTimeWorkRequestBuilder<BlurWorker>()
+
+        for (i in 0 until blurLevel) {
+            // Input the Uri fi this is the first blur operation
+            // after the first blur operation the input will be the output of previous
+            // blur operations.
+            if (i == 0) {
+                blurBuilder.setInputData(createInputDataForUri())
+            }
+            continuation = continuation.then(blurBuilder.build())
+        }
+
+        // Add WorkRequest to save the image to the filesystem
+        val saveRequest = OneTimeWorkRequest.Builder(SaveImageToFIleWorkerclass::class.java).build()
+
+        continuation = continuation.then(saveRequest)
+
+        //Actually start the work
+        continuation.enqueue()
     }
 
     internal fun setImageUri(uri: String?) {
