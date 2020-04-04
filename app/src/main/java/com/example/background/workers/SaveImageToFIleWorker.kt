@@ -15,7 +15,7 @@ import java.util.*
 /**
  * Saves the image to a permanent file
  */
-class SaveImageToFIleWorkerclass(ctx: Context, params: WorkerParameters) : Worker(ctx, params) {
+class SaveImageToFileWorker(ctx: Context, params: WorkerParameters) : Worker(ctx, params) {
 
     private val dateFormatter = SimpleDateFormat(
             "yyyy.MM.dd 'at' HH:mm:ss z",

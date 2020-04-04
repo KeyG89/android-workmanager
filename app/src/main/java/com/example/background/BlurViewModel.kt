@@ -23,7 +23,7 @@ import androidx.lifecycle.LiveData
 import androidx.work.*
 import com.example.background.workers.BlurWorker
 import com.example.background.workers.CleanupWorker
-import com.example.background.workers.SaveImageToFIleWorkerclass
+import com.example.background.workers.SaveImageToFileWorker
 
 
 class BlurViewModel(application: Application) : AndroidViewModel(application) {
@@ -93,7 +93,13 @@ class BlurViewModel(application: Application) : AndroidViewModel(application) {
         }
 
         // Add WorkRequest to save the image to the filesystem
-        val saveRequest = OneTimeWorkRequest.Builder(SaveImageToFIleWorkerclass::class.java)
+        // Create charging constraint
+        val saveRequestConstraints = Constraints.Builder()
+                .setRequiresCharging(true)
+                .build()
+
+        val saveRequest = OneTimeWorkRequest.Builder(SaveImageToFileWorker::class.java)
+                .setConstraints(saveRequestConstraints)
                 .addTag(TAG_OUTPUT)
                 .build()
 
